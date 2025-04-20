@@ -1,0 +1,71 @@
+From aef237cf181fdf309c5d82bdd38f723c08686eaf Mon Sep 17 00:00:00 2001
+From: CactiChameleon9 <51231053+CactiChameleon9@users.noreply.github.com>
+Date: Sun, 20 Apr 2025 16:51:29 +0100
+Subject: [PATCH] Enable crude auto-translate code
+
+---
+ .../android/fragments/BaseStatusListFragment.java        | 9 +++------
+ .../android/ui/displayitems/TextStatusDisplayItem.java   | 6 ++++++
+ 2 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/fragments/BaseStatusListFragment.java b/mastodon/src/main/java/org/joinmastodon/android/fragments/BaseStatusListFragment.java
+index e9f66df60..2e71cd845 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/fragments/BaseStatusListFragment.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/fragments/BaseStatusListFragment.java
+@@ -906,7 +906,7 @@ public abstract class BaseStatusListFragment<T extends DisplayItemsParent> exten
+ 			boolean idEquals=id.equals(item.parentID);
+ 			if(!encounteredParent && idEquals) encounteredParent=true; // reached top of the parent
+ 			else if(encounteredParent && !idEquals) break; // passed by bottom of the parent. man muss ja wissen wann schluss is
+-			if(idEquals && type.isInstance(item)){
++			if(idEquals && type.isInstance(item) && false){ // THIS CODE CAUSES CRASHES, DISABLE IT
+ 				adapter.notifyItemChanged(i);
+ 				return i;
+ 			}
+@@ -1122,11 +1122,8 @@ public abstract class BaseStatusListFragment<T extends DisplayItemsParent> exten
+ 	private void translationCallbackError(Status status, String itemID) {
+ 		status.translationState=Status.TranslationState.HIDDEN;
+ 		updateTranslation(itemID);
+-		new M3AlertDialogBuilder(getActivity())
+-				.setTitle(R.string.error)
+-				.setMessage(R.string.translation_failed)
+-				.setPositiveButton(R.string.ok, null)
+-				.show();
++
++		// Disable error dialog for fast scrolling
+ 	}
+ 
+ 	private void updateTranslation(String itemID) {
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/TextStatusDisplayItem.java b/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/TextStatusDisplayItem.java
+index 28dcc692d..c73172304 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/TextStatusDisplayItem.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/TextStatusDisplayItem.java
+@@ -168,6 +168,10 @@ public class TextStatusDisplayItem extends StatusDisplayItem{
+ 			ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
+ 			params.setMargins(params.leftMargin, item.inset && item.status.hasSpoiler() ? V.dp(-16) : 0,
+ 					params.rightMargin, params.bottomMargin);
++
++			if (translationButton != null){
++				translationButton.callOnClick();
++			}
+ 		}
+ 
+ 		@Override
+@@ -222,6 +226,7 @@ public class TextStatusDisplayItem extends StatusDisplayItem{
+ 				translationInfo.setVisibility(View.GONE);
+ 				UiUtils.beginLayoutTransition((ViewGroup) translationButtonWrap);
+ 			}else{
++				if(translationFooter==null) return; // Fixes crash
+ 				translationFooter.setVisibility(View.VISIBLE);
+ 				if(item.status.translationState==Status.TranslationState.SHOWN){
+ 					translationProgress.setVisibility(View.GONE);
+@@ -240,6 +245,7 @@ public class TextStatusDisplayItem extends StatusDisplayItem{
+ 						text.setText(item.translatedText);
+ 					}
+ 				}else{ // LOADING
++					if(translationFooter==null) return; // Might as well also check this here
+ 					translationProgress.setVisibility(View.VISIBLE);
+ 					translationButton.setClickable(false);
+ 					translationButton.animate().alpha(UiUtils.ALPHA_PRESSED).setStartDelay(50).setDuration(300).setInterpolator(CubicBezierInterpolator.DEFAULT).start();
+-- 
+2.48.1
+

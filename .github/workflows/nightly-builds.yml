@@ -11,29 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#    - name: Checkout Appkit Repo
-#      uses: actions/checkout@v3
-#      with:
-#        repository: grishka/appkit
-#
-#    - name: set up JDK 17
-#      uses: actions/setup-java@v3
-#      with:
-#        java-version: '17'
-#        distribution: 'corretto'
-#        cache: gradle
-#
-#    - name: Comment out signing config in appkits gradle file
-#      run: |
-#        sed -i 's/sign publishing\.publications\.release/\/\/ sign publishing.publications.release/' appkit/maven-push.gradle
-#
-#    - name: Grant execute permission for gradlew for Appkit
-#      run: chmod +x gradlew
-#
-#    - name: Compile appkit
-#      run: ./gradlew publishToMavenLocal
-      
     - uses: actions/checkout@v3
+
+    - name: Clone moshidon
+      run: git clone https://github.com/LucasGGamerM/moshidon
+
     - name: set up JDK 17
       uses: actions/setup-java@v3
       with:
@@ -45,15 +27,23 @@ jobs:
       id: date
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
+    - name: Apply patches
+      run: |
+        cd moshidon
+        git config --global user.email "actions@example.org"
+        git config --global user.name "actions"
+        git am ../*.patch
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    
+      working-directory: ./moshidon
+
     - name: Decode Keystore
       id: decode_keystore
       uses: timheuer/base64-to-file@v1
       with:
         fileName: 'nightly_keystore.jks'  
-        fileDir: './mastodon/keystore/'
+        fileDir: './moshidon/mastodon/keystore/'
         encodedString: ${{ secrets.KEYSTORE }}
     
     - name: Build with Gradle
@@ -63,9 +53,10 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           CURRENT_DATE: ${{ steps.date.outputs.date }}
+      working-directory: ./moshidon
       
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
       with:
-       name: moshidon-nightly.apk
-       path: ./mastodon/build/outputs/apk/nightly/moshidon-nightly.apk
+        name: moshidon-nightly.apk
+        path: ./moshidon/mastodon/build/outputs/apk/nightly/moshidon-nightly.apk
