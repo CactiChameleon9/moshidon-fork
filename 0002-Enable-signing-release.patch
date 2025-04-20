@@ -1,0 +1,73 @@
+From 0b6b5ed74834590279e9f1bd86bc3247c9c8ca17 Mon Sep 17 00:00:00 2001
+From: CactiChameleon9 <51231053+CactiChameleon9@users.noreply.github.com>
+Date: Sun, 20 Apr 2025 21:11:45 +0100
+Subject: [PATCH] Enable signing-release
+
+---
+ mastodon/build.gradle | 43 ++++++++++++++++++++++---------------------
+ 1 file changed, 22 insertions(+), 21 deletions(-)
+
+diff --git a/mastodon/build.gradle b/mastodon/build.gradle
+index 154b3073f..cc27003bd 100644
+--- a/mastodon/build.gradle
++++ b/mastodon/build.gradle
+@@ -52,27 +52,27 @@ android {
+ 			}
+ 		}
+ 
+-//		release{
+-//			storeFile = file("keystore/release_keystore.jks")
+-//			storePassword System.getenv("RELEASE_SIGNING_STORE_PASSWORD")
+-//			if (storePassword == null) {
+-//				Properties properties = new Properties()
+-//				properties.load(project.rootProject.file('local.properties').newDataInputStream())
+-//				storePassword = properties.getProperty('RELEASE_SIGNING_STORE_PASSWORD')
+-//			}
+-//			keyAlias System.getenv("RELEASE_SIGNING_KEY_ALIAS")
+-//			if (keyAlias == null) {
+-//				Properties properties = new Properties()
+-//				properties.load(project.rootProject.file('local.properties').newDataInputStream())
+-//				keyAlias = properties.getProperty('RELEASE_SIGNING_KEY_ALIAS')
+-//			}
+-//			keyPassword System.getenv("RELEASE_SIGNING_KEY_PASSWORD")
+-//			if (keyPassword == null) {
+-//				Properties properties = new Properties()
+-//				properties.load(project.rootProject.file('local.properties').newDataInputStream())
+-//				keyPassword = properties.getProperty('RELEASE_SIGNING_KEY_PASSWORD')
+-//			}
+-//		}
++		release{
++			storeFile = file("keystore/release_keystore.jks")
++			storePassword System.getenv("SIGNING_STORE_PASSWORD")
++			if (storePassword == null) {
++				Properties properties = new Properties()
++				properties.load(project.rootProject.file('local.properties').newDataInputStream())
++				storePassword = properties.getProperty('RELEASE_SIGNING_STORE_PASSWORD')
++			}
++			keyAlias System.getenv("SIGNING_KEY_ALIAS")
++			if (keyAlias == null) {
++				Properties properties = new Properties()
++				properties.load(project.rootProject.file('local.properties').newDataInputStream())
++				keyAlias = properties.getProperty('RELEASE_SIGNING_KEY_ALIAS')
++			}
++			keyPassword System.getenv("SIGNING_KEY_PASSWORD")
++			if (keyPassword == null) {
++				Properties properties = new Properties()
++				properties.load(project.rootProject.file('local.properties').newDataInputStream())
++				keyPassword = properties.getProperty('RELEASE_SIGNING_KEY_PASSWORD')
++			}
++		}
+ 	}
+ 
+ 	buildTypes {
+@@ -80,6 +80,7 @@ android {
+ 			minifyEnabled true
+ 			shrinkResources true
+ 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++			signingConfig signingConfigs.release
+ 		}
+ 		debug{
+ 			debuggable true
+-- 
+2.48.1
+

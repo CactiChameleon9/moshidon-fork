@@ -63,7 +63,7 @@ jobs:
       id: decode_keystore
       uses: timheuer/base64-to-file@v1
       with:
-        fileName: 'nightly_keystore.jks'  
+        fileName: 'release_keystore.jks'
         fileDir: './moshidon/mastodon/keystore/'
         encodedString: ${{ secrets.KEYSTORE }}
     
@@ -75,13 +75,6 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           CURRENT_DATE: ${{ steps.date.outputs.date }}
       working-directory: ./moshidon
-
-    - name: Debug
-      run: |
-        find ./moshidon/mastodon/build/outputs
-        echo
-        echo
-        find ./
       
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
