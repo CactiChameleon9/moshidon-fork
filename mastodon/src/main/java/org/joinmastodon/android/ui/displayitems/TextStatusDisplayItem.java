@@ -168,6 +168,10 @@ public class TextStatusDisplayItem extends StatusDisplayItem{
 			ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
 			params.setMargins(params.leftMargin, item.inset && item.status.hasSpoiler() ? V.dp(-16) : 0,
 					params.rightMargin, params.bottomMargin);
+
+			if (translationButton != null){
+				translationButton.callOnClick();
+			}
 		}
 
 		@Override
@@ -222,6 +226,7 @@ public class TextStatusDisplayItem extends StatusDisplayItem{
 				translationInfo.setVisibility(View.GONE);
 				UiUtils.beginLayoutTransition((ViewGroup) translationButtonWrap);
 			}else{
+				if(translationFooter==null) return; // Fixes crash
 				translationFooter.setVisibility(View.VISIBLE);
 				if(item.status.translationState==Status.TranslationState.SHOWN){
 					translationProgress.setVisibility(View.GONE);
@@ -240,6 +245,7 @@ public class TextStatusDisplayItem extends StatusDisplayItem{
 						text.setText(item.translatedText);
 					}
 				}else{ // LOADING
+					if(translationFooter==null) return; // Might as well also check this here
 					translationProgress.setVisibility(View.VISIBLE);
 					translationButton.setClickable(false);
 					translationButton.animate().alpha(UiUtils.ALPHA_PRESSED).setStartDelay(50).setDuration(300).setInterpolator(CubicBezierInterpolator.DEFAULT).start();

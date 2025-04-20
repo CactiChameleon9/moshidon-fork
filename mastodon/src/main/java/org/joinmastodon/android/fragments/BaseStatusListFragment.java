@@ -906,7 +906,7 @@ public abstract class BaseStatusListFragment<T extends DisplayItemsParent> exten
 			boolean idEquals=id.equals(item.parentID);
 			if(!encounteredParent && idEquals) encounteredParent=true; // reached top of the parent
 			else if(encounteredParent && !idEquals) break; // passed by bottom of the parent. man muss ja wissen wann schluss is
-			if(idEquals && type.isInstance(item)){
+			if(idEquals && type.isInstance(item) && false){ // THIS CODE CAUSES CRASHES, DISABLE IT
 				adapter.notifyItemChanged(i);
 				return i;
 			}
@@ -1122,11 +1122,8 @@ public abstract class BaseStatusListFragment<T extends DisplayItemsParent> exten
 	private void translationCallbackError(Status status, String itemID) {
 		status.translationState=Status.TranslationState.HIDDEN;
 		updateTranslation(itemID);
-		new M3AlertDialogBuilder(getActivity())
-				.setTitle(R.string.error)
-				.setMessage(R.string.translation_failed)
-				.setPositiveButton(R.string.ok, null)
-				.show();
+
+		// Disable error dialog for fast scrolling
 	}
 
 	private void updateTranslation(String itemID) {
