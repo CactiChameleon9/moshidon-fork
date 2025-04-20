@@ -1,3 +1,0 @@
-La versione 97 aggiunge:
-- La nuova funzionalità Timeline Locali Personalizzate. È possibile accedervi dal menu Aggiungi timeline
-- Piccole correzioni e migliorie

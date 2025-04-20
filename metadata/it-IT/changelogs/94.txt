@@ -1,5 +1,0 @@
-Novità della versione 94:
-- Migliorie del comportamento del FAB
-- Cambiamenti minori all'icona del launcher
-- Miglioramenti del comportamento delle notifiche
-- Piccoli bugfix e miglioramenti

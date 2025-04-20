@@ -1,2 +1,0 @@
-- Mengaktifkan berbagi langsung dari penampil gambar (Tidak perlu mengunduh media untuk membagikannya lagi)
-- Banyak perbaikan bug dan peningkatan kecil

@@ -1,3 +1,0 @@
-Release 84 fixar några buggar, såsom:
-- Återuppringning av inloggning fungerar inte
-- Uppdatering av tysk översättning. Tack @DanTobi!

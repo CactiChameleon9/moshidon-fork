@@ -1,4 +1,0 @@
-Hal-hal baru untuk rilis 86:
-- Kemampuan untuk menumpuk notifikasi, yaitu: memiliki banyak notifikasi;
-- Memperkenalkan Pengumuman;
-- Banyak perbaikan kecil UI.

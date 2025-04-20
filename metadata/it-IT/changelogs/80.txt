@@ -1,1 +1,0 @@
-Aggiunto un interruttore opzionale per spostare il tasto "Pubblica" in una posizione più raggiungibile! È ora lo standard!

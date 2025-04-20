@@ -1,3 +1,0 @@
-- Incorporato codice upstream (2.3.0)
-- Aggiunto recupero remoto della cronologia del post
-- Corretti diversi bug

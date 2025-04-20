@@ -1,3 +1,0 @@
-Hal-hal baru untuk 95:
-- Menambahkan kemampuan untuk memiliki timeline lokal server lain di timeline
-- Perbaikan dan peningkatan kecil

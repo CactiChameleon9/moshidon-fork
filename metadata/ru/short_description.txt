@@ -1,1 +1,0 @@
-Android клиент Mastodon в дизайне Material You и дополнительными функциями
