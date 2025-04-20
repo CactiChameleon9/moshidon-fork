@@ -1,0 +1,100 @@
+name: Check, Patch and Build
+
+on:
+  schedule:
+   - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Check if no new releases
+      run: |
+        WEEKAGO=$(date +"%s" -d "1 week ago")
+        LASTRELEASEDATE=$(curl https://api.github.com/repos/LucasGGamerM/moshidon/releases/latest -s | grep published_at | sed -E 's/.*"([^"]+)".*/\1/' | date +"%s" -f -)
+        if [ $WEEKAGO -ge $LASTRELEASEDATE ];
+        then
+            echo "No New Release"
+            exit 0
+        fi
+    
+    - uses: actions/checkout@v3
+
+    - name: Get moshidon latest tag
+      id: tag
+      run: |
+        LATEST_TAG=$(curl https://api.github.com/repos/LucasGGamerM/moshidon/releases/latest -s | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/')
+        echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+    - name: Clone moshidon latest release
+      run: |
+        git clone https://github.com/LucasGGamerM/moshidon
+        cd moshidon
+        git checkout ${{ steps.tag.outputs.tag }}
+        cd ../
+
+    - name: set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'corretto'
+        cache: gradle
+    
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+    - name: Apply patches
+      run: |
+        cd moshidon
+        git config --global user.email "actions@example.org"
+        git config --global user.name "actions"
+        git am ../*.patch
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      working-directory: ./moshidon
+
+    - name: Decode Keystore
+      id: decode_keystore
+      uses: timheuer/base64-to-file@v1
+      with:
+        fileName: 'nightly_keystore.jks'  
+        fileDir: './moshidon/mastodon/keystore/'
+        encodedString: ${{ secrets.KEYSTORE }}
+    
+    - name: Build with Gradle
+      run: ./gradlew assembleRelease
+      env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          CURRENT_DATE: ${{ steps.date.outputs.date }}
+      working-directory: ./moshidon
+
+    - name: Debug
+      run: |
+        find ./moshidon/mastodon/build/outputs
+        echo
+        echo
+        find ./
+      
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: moshidon.apk
+        path: ./moshidon/mastodon/build/outputs/apk/release/moshidon-release.apk
+
+    - name: Release apk
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: "${{ steps.tag.outputs.tag }}"
+        body: "Forked build with patches"
+        files: |
+           ./moshidon/mastodon/build/outputs/apk/release/moshidon-release.apk
+        repository: "CactiChameleon9/moshidon-fork"
+        token: ${{ secrets.PAT_GITHUB_ACTION }}
