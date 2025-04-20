@@ -18,8 +18,8 @@ jobs:
         LASTRELEASEDATE=$(curl https://api.github.com/repos/LucasGGamerM/moshidon/releases/latest -s | grep published_at | sed -E 's/.*"([^"]+)".*/\1/' | date +"%s" -f -)
         if [ $WEEKAGO -ge $LASTRELEASEDATE ];
         then
-            echo "No New Release"
-            exit 0
+            echo "No New Release. \"Failing\""
+            exit 1
         fi
     
     - uses: actions/checkout@v3
